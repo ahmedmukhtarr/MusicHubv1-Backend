@@ -1,7 +1,7 @@
 const express = require('express');
 const connectDB = require('./config/database');
 const userRoutes = require('./routes/userRoutes');
-const messageRoutes = require('./routes/messageRoute');
+const postFeedRoutes = require('./routes/postFeedRoutes');
 
 const cors = require('cors');
 
@@ -16,7 +16,6 @@ app.use(express.json());
 
 // Routes
 app.use('/api/user', userRoutes);
-app.use('/api/sendMessage', messageRoutes);
-
+app.use('/api/posts', postFeedRoutes);
 
 module.exports = app;
