@@ -7,13 +7,13 @@ const { createPost, getAllPosts, getPost, updatePost, deletePost, addComment, li
 // Middleware to check if the user is authenticated
 const authenticateUser = passport.authenticate('jwt', { session: false });
 
-router.post('/create', authenticateUser, createPost);
-router.get('/getAll', authenticateUser, getAllPosts);
-router.get('/get/:postId', authenticateUser, getPost);
-router.put('/update/:postId', authenticateUser, updatePost);
-router.delete('/delete/:postId', authenticateUser, deletePost);
-router.post('/add/comment/:postId', authenticateUser, addComment);
-router.post('/like/:postId', authenticateUser, likePost);
-router.post('/unlike/:postId', authenticateUser, unlikePost);
+router.post('/create', createPost);
+router.get('/getAll', getAllPosts);
+router.get('/get/:postId', getPost);
+router.put('/update/:postId', updatePost);
+router.delete('/delete/:postId', deletePost);
+router.post('/add/comment/:postId', addComment);
+router.post('/like/:postId', likePost);
+router.post('/unlike/:postId', unlikePost);
 
 module.exports = router;
