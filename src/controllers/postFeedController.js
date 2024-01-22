@@ -95,9 +95,9 @@ const deletePost = async (req, res) => {
       return res.status(404).json({ message: 'Post not found', success: false });
     }
 
-    await post.remove();
+    await post.deleteOne();                              
 
-    return res.status(204).json({ message: 'Post deleted successfully', success: true });
+    return res.status(200).json({ message: 'Post deleted successfully', success: true });
   } catch (error) {
     console.error('Error deleting post', error);
     return res.status(500).json({ message: 'Internal server error', success: false });
@@ -136,11 +136,10 @@ const addComment = async (req, res) => {
   }
 };
 
-// Like a post
 const likePost = async (req, res) => {
   try {
     const postId = req.params.postId;
-    const userId = req.user.userId;
+    const userId = req.body.userId;
 
     const post = await Post.findById(postId).populate('likes', 'name');
 
@@ -158,21 +157,22 @@ const likePost = async (req, res) => {
 
     await post.save();
 
-    // Populate the likes array again to include usernames in the response
-    await post.populate('likes', 'name').execPopulate();
+    // Use populate on the query object
+    const updatedPost = await Post.findById(postId).populate('likes', 'name');
 
-    return res.status(200).json({ message: 'Post liked successfully', success: true, data: { likes: post.likes } });
+    return res.status(200).json({ message: 'Post liked successfully', success: true, data: { likes: updatedPost.likes } });
   } catch (error) {
     console.error('Error liking post', error);
     return res.status(500).json({ message: 'Internal server error', success: false });
   }
 };
 
+
 // Unlike a post
 const unlikePost = async (req, res) => {
   try {
     const postId = req.params.postId;
-    const userId = req.user.userId;
+    const userId = req.body.userId;
 
     const post = await Post.findById(postId).populate('likes', 'name');
 
@@ -180,13 +180,15 @@ const unlikePost = async (req, res) => {
       return res.status(404).json({ message: 'Post not found', success: false });
     }
 
-    // Check if the user has liked the post
-    if (!post.likes.map(like => like.id).includes(userId)) {
-      return res.status(400).json({ message: 'Post not liked by the user', success: false });
+    // Check if the user has already liked the post
+    const likeIndex = post.likes.findIndex(like => like.id === userId);
+
+    if (likeIndex === -1) {
+      return res.status(400).json({ message: 'User has not liked the post', success: false });
     }
 
     // Remove the user ID from the likes array
-    post.likes = post.likes.filter(like => like.id !== userId);
+    post.likes.splice(likeIndex, 1);
 
     await post.save();
 
