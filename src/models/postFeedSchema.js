@@ -26,14 +26,25 @@ const postFeedSchema = new mongoose.Schema({
   comments: [
     {
       user: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'User',
+        id: {
+          type: mongoose.Schema.Types.ObjectId,
+          ref: 'User', // This should be the name of your user model
+          required: false,
+        },
+        name: {
+          type: String,
+          required: false,
+        },
+        email: {
+          type: String,
+          required: false,
+        },
       },
       text: {
         type: String,
         required: true,
       },
-    },
+    }
   ],
 });
 

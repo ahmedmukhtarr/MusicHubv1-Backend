@@ -5,18 +5,27 @@ const User = require('../models/user');
 // Create a new post
 const createPost = async (req, res) => {
   try {
-    const { text, imageUrl, videoUrl, userId } = req.body;
+    const { text, userId } = req.body;
+
+    const image = req.file; // Access the uploaded file object
+    console.log("Moderation", req.image);
+
+    if (!image) {
+      return res.status(400).json({ message: 'Image file is required' });
+    }
 
     const user = await User.findById(userId);
     if (!user) {
       return res.status(404).json({ message: 'User not found', success: false });
     }
 
+    const imageUrl = `/uploads/moderation/${image.filename}`;
+    console.log(imageUrl);
+
     const newPost = new Post({
       user: userId,
       text,
       imageUrl,
-      videoUrl,
     });
 
     await newPost.save();
@@ -27,6 +36,8 @@ const createPost = async (req, res) => {
     return res.status(500).json({ message: 'Internal server error', success: false });
   }
 };
+
+
 
 // Get all posts
 const getAllPosts = async (req, res) => {
@@ -108,9 +119,7 @@ const deletePost = async (req, res) => {
 const addComment = async (req, res) => {
   try {
     const postId = req.params.postId;
-    const { text } = req.body;
-    const userId = req.user.userId;
-    const userName = req.user.name;
+    const { text, userId } = req.body;
 
     const post = await Post.findById(postId);
 
@@ -118,10 +127,19 @@ const addComment = async (req, res) => {
       return res.status(404).json({ message: 'Post not found', success: false });
     }
 
-    // Create a new comment
+    // Fetch user details using userId
+    const user = await User.findById(userId);
+    if (!user) {
+      return res.status(404).json({ message: 'User not found', success: false });
+    }
+
+    // Create a new comment with user details
     const newComment = {
-      user: userId,
-      name: userName,
+      user: {
+        id: user._id,
+        name: user.name,
+        email: user.email,
+      },
       text,
     };
 

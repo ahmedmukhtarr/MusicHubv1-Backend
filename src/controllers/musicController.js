@@ -6,30 +6,14 @@ const path = require('path');
 const createMusic = async (req, res) => {
   try {
     const { title, userId } = req.body;
-    const audioFileBuffer = req.file.buffer;
+    const fileUrl = `/uploads/music/${req.file.filename}`;
 
-    // Find the user by ID and fetch complete user data
     const user = await User.findById(userId);
 
     if (!user) {
       return res.status(404).json({ message: 'User not found', success: false });
     }
 
-    // Ensure 'uploads' directory exists
-    const uploadsDirectory = path.join(__dirname, 'uploads');
-    if (!fs.existsSync(uploadsDirectory)) {
-      fs.mkdirSync(uploadsDirectory);
-    }
-
-    // Save the audio file locally
-    const fileName = `${Date.now()}_${title.replace(/\s/g, '_')}`;
-    const filePath = path.join(uploadsDirectory, fileName);
-    fs.writeFileSync(filePath, audioFileBuffer);
-
-    // Generate a URL for the saved file
-    const fileUrl = `${req.protocol}://${req.get('host')}/uploads/${fileName}`;
-
-    // Save complete user details along with the music file URL
     const newMusic = new Music({
       title,
       fileUrl,
@@ -42,7 +26,6 @@ const createMusic = async (req, res) => {
 
     await newMusic.save();
 
-    // Send the response with complete user data
     return res.status(201).json({
       message: 'Music created successfully',
       success: true,
