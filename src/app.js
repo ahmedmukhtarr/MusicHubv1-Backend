@@ -6,6 +6,8 @@ const postFeedRoutes = require('./routes/postFeedRoutes');
 const musicRoutes = require('./routes/musicRoutes');
 const complaintRoutes = require('./routes/complaintRoutes');
 const merchandiseRoutes = require('./routes/merchandiseRoutes');
+const paymentRoutes = require('./routes/paymentRoutes');
+const recentSearchRoutes = require('./routes/recentSearchRoutes');
 const cors = require('cors');
 const path = require('path');
 
@@ -27,5 +29,6 @@ app.use('/api/posts', postFeedRoutes);
 app.use('/api/music', musicRoutes);
 app.use('/api/complaint', complaintRoutes);
 app.use('/api/merchandise', merchandiseRoutes);
-
+app.use('/api/payment', paymentRoutes);
+app.use('/api/recentSearches', recentSearchRoutes)
 module.exports = app;

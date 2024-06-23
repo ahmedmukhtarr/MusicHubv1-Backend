@@ -12,7 +12,7 @@ const musicSchema = new mongoose.Schema({
   user: {
     id: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: 'User', // This should be the name of your user model
+      ref: 'User',
       required: false,
     },
     name: {
@@ -23,6 +23,14 @@ const musicSchema = new mongoose.Schema({
       type: String,
       required: false,
     },
+  },
+  language: {
+    type: String,
+    required: true,
+  },
+  genre: {
+    type: String,
+    required: true,
   },
 });
 

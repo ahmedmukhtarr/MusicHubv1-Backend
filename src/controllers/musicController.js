@@ -5,7 +5,8 @@ const path = require('path');
 
 const createMusic = async (req, res) => {
   try {
-    const { title, userId } = req.body;
+    const { title, userId, language, genre } = req.body;
+    console.log(req.file);
     const fileUrl = `/uploads/music/${req.file.filename}`;
 
     const user = await User.findById(userId);
@@ -17,6 +18,8 @@ const createMusic = async (req, res) => {
     const newMusic = new Music({
       title,
       fileUrl,
+      language,
+      genre,
       user: {
         id: user._id,
         name: user.name,
@@ -39,18 +42,19 @@ const createMusic = async (req, res) => {
 // Get all music files
 const getAllMusic = async (req, res) => {
   try {
-    const musicList = await Music.find().populate('user', 'username'); // Assuming user is a reference in Music model
+    const musicList = await Music.find().populate('user', 'username');
 
-    // Transform the fetched musicList to the desired format
     const formattedMusicList = musicList.map(music => ({
       id: music._id,
       title: music.title,
-      file: music.fileUrl, // Assuming fileUrl is the field containing the file details
-      user: music?.user ? music.user : 'Unknown', // Use 'Unknown' if user is not available
+      file: music.fileUrl,
+      language: music.language,
+      genre: music.genre,
+      user: music?.user ? music.user : 'Unknown',
     }));
 
-    return res.status(201).json({
-      message: 'Music created successfully',
+    return res.status(200).json({
+      message: 'Music retrieved successfully',
       success: true,
       data: formattedMusicList
     });
@@ -63,20 +67,18 @@ const getAllMusic = async (req, res) => {
 // Update a music file
 const updateMusic = async (req, res) => {
   try {
-    const { title, userId } = req.body;
+    const { title, userId, language, genre } = req.body;
     const musicId = req.params.id;
 
-    // Check if the music belongs to the specified user
     const music = await Music.findById(musicId);
 
     if (!music || music.user.toString() !== userId) {
       return res.status(404).json({ message: 'Music not found or unauthorized', success: false });
     }
 
-    // Update the music title
     const updatedMusic = await Music.findByIdAndUpdate(
       musicId,
-      { title },
+      { title, language, genre },
       { new: true }
     );
 
@@ -86,6 +88,7 @@ const updateMusic = async (req, res) => {
     res.status(500).json({ error: 'Internal server error' });
   }
 };
+
 
 // Delete a music file
 const deleteMusic = async (req, res) => {

@@ -118,6 +118,9 @@ const updateProfile = async (req, res) => {
     const { userId } = req.body; // Assuming you send the user ID in the request
     const { newUsername, newPassword, confirmPassword } = req.body;
 
+    console.log(newPassword);
+console.log(confirmPassword);
+
     // Find the user by ID
     const user = await User.findById(userId);
 

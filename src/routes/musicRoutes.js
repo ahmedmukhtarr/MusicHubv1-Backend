@@ -4,10 +4,9 @@ const fs = require('fs');
 const path = require('path');
 const router = express.Router();
 const { createMusic, getAllMusic, updateMusic, deleteMusic } = require('../controllers/musicController');
-const Music = require('../models/Music'); // Assuming Music model is defined in this file
-const User = require('../models/user'); // Assuming User model is defined in this file
+const Music = require('../models/Music');
+const User = require('../models/user');
 
-// Configure multer storage
 const storage = multer.diskStorage({
   destination: function (req, file, cb) {
     const uploadsDirectory = path.join(__dirname, '..', '..', 'public', 'uploads', 'music');
@@ -24,7 +23,6 @@ const storage = multer.diskStorage({
 
 const upload = multer({ storage: storage });
 
-// Define routes
 router.post('/upload', upload.single('file'), createMusic);
 router.get('/getAll', getAllMusic);
 router.put('/update/:id', updateMusic);
